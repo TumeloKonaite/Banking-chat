@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple, Dict, Any
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 from src.exception import CustomException
 from src.logger import logging
 
@@ -131,7 +131,7 @@ class DocumentEmbedding:
 
 if __name__ == "__main__":
     # Example wiring with your existing pipeline
-    from src.ingestion.fetch_documents import fetch_documents
+    from src.ingestion.load_documents import fetch_documents
     from src.chunking.document_chunking import DocumentChunking
 
     logging.info("Running embedding module as a script")

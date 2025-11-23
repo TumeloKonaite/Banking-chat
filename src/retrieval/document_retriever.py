@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_chroma import Chroma
 
 from src.exception import CustomException
@@ -110,15 +110,12 @@ class DocumentRetriever:
         )
 
         try:
-            retriever = self._vectorstore.as_retriever(search_kwargs={"k": top_k})
-
+            search_kwargs = {"k": top_k}
             if doc_type:
-                results = retriever.get_relevant_documents(
-                    query,
-                    filter={"doc_type": doc_type},
-                )
-            else:
-                results = retriever.get_relevant_documents(query)
+                search_kwargs["filter"] = {"doc_type": doc_type}
+
+            retriever = self._vectorstore.as_retriever(search_kwargs=search_kwargs)
+            results = retriever.invoke(query)
 
             logging.info(f"Retrieved {len(results)} chunks")
             return results

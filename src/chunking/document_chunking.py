@@ -8,7 +8,7 @@ from typing import List, Tuple
 
 import pandas as pd
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 from src.exception import CustomException
 from src.logger import logging
@@ -102,7 +102,7 @@ class DocumentChunking:
 
 if __name__ == "__main__":
     # Example wiring with your existing fetch_documents
-    from src.ingestion.fetch_documents import fetch_documents
+    from src.ingestion.load_documents import fetch_documents
 
     logging.info("Running document chunking as a script")
     docs = fetch_documents()  # uses your DATA_DIR and PDF loader

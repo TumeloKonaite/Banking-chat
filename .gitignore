@@ -1,0 +1,77 @@
+# ============================
+#  Do NOT commit secrets
+# ============================
+.env
+
+
+# ============================
+#  Python
+# ============================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.pickle
+*.db
+*.sqlite
+*.log
+
+
+# ============================
+#  Virtual environments
+# ============================
+.venv/
+env/
+venv/
+*/.venv/
+
+
+# ============================
+#  UV build directories
+# ============================
+.uv/
+dist/
+build/
+
+
+# ============================
+#  Cache / temp
+# ============================
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+artifacts/__pycache__/
+
+
+# ============================
+#  Data / Vector DB
+# ============================
+artifacts/chunks/
+artifacts/embeddings/
+artifacts/vector_db/
+vector_db/
+chroma_db/
+*.npy
+
+
+# ============================
+#  Logs
+# ============================
+logs/
+*.log
+
+
+# ============================
+#  IDE / Editor
+# ============================
+.vscode/
+.idea/
+
+
+# ============================
+#  Misc
+# ============================
+*.tmp
+*.swp
+*.bak

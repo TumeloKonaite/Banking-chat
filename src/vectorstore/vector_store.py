@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List
 
 from dotenv import load_dotenv
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_chroma import Chroma
 
 from src.exception import CustomException
@@ -132,7 +132,7 @@ class VectorStoreBuilder:
 
 if __name__ == "__main__":
     # Example full pipeline run
-    from src.ingestion.fetch_documents import fetch_documents
+    from src.ingestion.load_documents import fetch_documents
     from src.chunking.document_chunking import DocumentChunking
 
     logging.info("Running vector store builder as a script")

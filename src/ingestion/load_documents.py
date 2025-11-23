@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List
 
 from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
-from langchain.schema import Document  # optional, just for type hints
+from langchain_core.documents import Document  # optional, just for type hints
 
 # Project root: .../Banking-rag/
 PROJECT_ROOT = Path(__file__).resolve().parents[2]

@@ -6,7 +6,7 @@ from typing import List, Dict, Tuple, Optional
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, convert_to_messages
-from langchain.schema import Document  # for type hints
+from langchain_core.documents import Document  # for type hints
 
 from src.exception import CustomException
 from src.logger import logging
