@@ -83,6 +83,8 @@ HF_TOKEN=hf-...
 - `src/retrieval/` - Chroma retriever with metadata filters
 - `src/pipeline/` - guardrailed ChatOpenAI RAG pipeline
 - `src/server/` - FastAPI endpoint and Gradio chat UI
+- `src/evaluation/` - LLM-as-a-judge tooling and CLI
+- `src/tests/` - JSONL fixtures plus helper models
 - `notebooks/` - optional exploratory work
 
 ## Build the knowledge base
@@ -174,15 +176,27 @@ docker run \
 
 Mounting `data/` and `artifacts/` keeps your PDFs and vector DB on the host. Once the container is running, hit `http://localhost:8000/ask` (POST) or launch the Gradio UI separately and target the same base URL.
 
+## Evaluate the pipeline
+
+This repo includes a lightweight evaluation harness (LLM-as-a-judge + retrieval metrics) under `src/evaluation/` and fixtures in `src/tests/tests.jsonl`. To score a single row from the test set, run:
+
+```bash
+uv run python -m src.evaluation.eval 0
+```
+
+Replace `0` with any row index from the JSONL file. The CLI prints retrieval metrics (MRR, nDCG, keyword coverage) plus judge feedback and accuracy/completeness/relevance scores. You can also import `evaluate_all_retrieval` / `evaluate_all_answers` for batch processing in notebooks or scripts.
+
 ## Continuous integration
 
 A lightweight GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push or pull request against `main`. The workflow:
 
-- checks out the repository and installs dependencies with Python 3.13, 9999999999999f
-- byte-compiles `src/` to catch syntax/import issues early,
+- checks out the repository and installs dependencies with Python 3.13 (including the optional `dev` extras for Ruff),
+- runs `ruff check .` and `python -m compileall src` to catch style and syntax issues early,
+- builds the Docker image with `docker build -t banking-rag-ci .`,
+- runs `python -m src.evaluation.eval 0` as a smoke test when the `OPENAI_API_KEY` secret is present,
 - and, on successful runs against `main`, tags the commit as `ci-<run_number>` and pushes the tag back to the repo.
 
-If you want to skip auto-tagging for a fork, delete or edit the “Tag successful build” step in the workflow.
+If you want to skip auto-tagging for a fork, delete or edit the "Tag successful build" step in the workflow.
 
 ## Customisation ideas
 
