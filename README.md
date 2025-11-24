@@ -178,7 +178,7 @@ Mounting `data/` and `artifacts/` keeps your PDFs and vector DB on the host. Onc
 
 A lightweight GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push or pull request against `main`. The workflow:
 
-- checks out the repository and installs dependencies with Python 3.13,
+- checks out the repository and installs dependencies with Python 3.13, 9999999999999f
 - byte-compiles `src/` to catch syntax/import issues early,
 - and, on successful runs against `main`, tags the commit as `ci-<run_number>` and pushes the tag back to the repo.
 
