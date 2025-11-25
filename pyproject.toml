@@ -12,6 +12,7 @@ dependencies = [
     "gradio-client>=1.14.0",
     "httpx>=0.28.1",
     "litellm>=1.52.7",
+    "mlflow>=2.16.0",
     "langchain>=1.0.8",
     "langchain-chroma>=1.0.0",
     "langchain-community>=0.4.1",
