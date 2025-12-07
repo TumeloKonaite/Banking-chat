@@ -186,6 +186,20 @@ uv run python -m src.evaluation.eval 0
 
 Replace `0` with any row index from the JSONL file. The CLI prints retrieval metrics (MRR, nDCG, keyword coverage) plus judge feedback and accuracy/completeness/relevance scores. You can also import `evaluate_all_retrieval` / `evaluate_all_answers` for batch processing in notebooks or scripts.
 
+## Track runs with MLflow
+
+All artifact builds and evaluations can be logged as MLflow runs for reproducibility:
+
+```bash
+# rebuild artifacts + log params/metrics/artifacts under the "artifact-builds" experiment
+python -m src.pipeline.build_artifacts
+
+# run an evaluation (logs to the "evaluation-runs" experiment)
+python -m src.evaluation.eval 0
+```
+
+By default MLflow writes to `./mlruns`; set `MLFLOW_TRACKING_URI` if you want to point at a remote server. Start a local UI with `mlflow ui --port 5000` to compare runs, inspect logged artifacts (chunk CSVs, embeddings, Chroma snapshots, evaluation JSON), and monitor how parameter tweaks affect retrieval and judge scores.
+
 ## Continuous integration
 
 A lightweight GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push or pull request against `main`. The workflow:

@@ -2,8 +2,12 @@ import math
 import sys
 from functools import lru_cache
 from typing import List, Tuple
+import tempfile
+import json
+from pathlib import Path
 
 from dotenv import load_dotenv
+import mlflow
 from langchain_core.documents import Document
 from litellm import completion
 from pydantic import BaseModel, Field
@@ -264,6 +268,49 @@ def run_cli_evaluation(test_number: int):
     print(f"  Completeness: {answer_result.completeness:.2f}/5")
     print(f"  Relevance: {answer_result.relevance:.2f}/5")
     print(f"\n{'=' * 80}\n")
+
+    # Log to MLflow
+    mlflow.set_experiment("evaluation-runs")
+    with mlflow.start_run(run_name=f"eval-{test_number}-{test.category}"):
+        mlflow.log_params(
+            {
+                "test_index": test_number,
+                "question": test.question,
+                "category": test.category,
+                "doc_type": test.doc_type or "all",
+                "keyword_count": len(test.keywords),
+            }
+        )
+        mlflow.log_metrics(
+            {
+                "retrieval_mrr": retrieval_result.mrr,
+                "retrieval_ndcg": retrieval_result.ndcg,
+                "retrieval_keyword_coverage": retrieval_result.keyword_coverage,
+                "accuracy": answer_result.accuracy,
+                "completeness": answer_result.completeness,
+                "relevance": answer_result.relevance,
+            }
+        )
+
+        payload = {
+            "question": test.question,
+            "reference_answer": test.reference_answer,
+            "generated_answer": generated_answer,
+            "keywords": test.keywords,
+            "feedback": answer_result.feedback,
+            "retrieved_sources": [
+                {
+                    "source": doc.metadata.get("source"),
+                    "doc_type": doc.metadata.get("doc_type"),
+                    "preview": doc.page_content[:500],
+                }
+                for doc in retrieved_docs[:5]
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result_path = Path(tmpdir) / "evaluation_result.json"
+            result_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            mlflow.log_artifact(str(result_path), artifact_path="evaluation")
 
 
 def main():
