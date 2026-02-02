@@ -85,6 +85,42 @@ def _chat_response(
     return updated_history
 
 
+def _fetch_corpus_info(api_url: str) -> str:
+    """
+    Fetch manifest-backed corpus info from the API /ready endpoint.
+    """
+    try:
+        with httpx.Client(timeout=10) as client:
+            resp = client.get(f"{api_url.rstrip('/')}/ready")
+            resp.raise_for_status()
+            payload = resp.json()
+    except Exception as exc:  # pragma: no cover - UI feedback only
+        return f"Corpus info unavailable: {exc}"
+
+    if not payload.get("ready"):
+        return f"Corpus not ready: {payload.get('detail', 'Unknown error')}"
+
+    manifest = payload.get("manifest") or {}
+    built_at = manifest.get("built_at", "unknown")
+    doc_count = manifest.get("document_count", "unknown")
+    doc_types = manifest.get("document_types", {})
+    embedding_model = manifest.get("embedding_model", "unknown")
+    chunk_size = manifest.get("chunk_size", "unknown")
+    chunk_overlap = manifest.get("chunk_overlap", "unknown")
+
+    lines = [
+        "### Corpus",
+        f"- Built at: {built_at}",
+        f"- Documents: {doc_count}",
+        f"- Embedding model: {embedding_model}",
+        f"- Chunk size / overlap: {chunk_size} / {chunk_overlap}",
+    ]
+    if doc_types:
+        joined = ", ".join(f"{k} ({v})" for k, v in doc_types.items())
+        lines.append(f"- Doc types: {joined}")
+    return "\n".join(lines)
+
+
 def build_interface(default_api_url: str = DEFAULT_API_URL) -> gr.Blocks:
     """
     Construct the Gradio Blocks app connected to the FastAPI backend.
@@ -103,6 +139,10 @@ def build_interface(default_api_url: str = DEFAULT_API_URL) -> gr.Blocks:
             value=default_api_url,
             placeholder="http://localhost:8000",
         )
+
+        corpus_info = gr.Markdown("### Corpus\n- Not loaded yet")
+        refresh_btn = gr.Button("Load corpus info")
+
         doc_type_box = gr.Textbox(
             label="Doc type filter",
             placeholder="Optional metadata tag, e.g. product_terms",
@@ -127,6 +167,12 @@ def build_interface(default_api_url: str = DEFAULT_API_URL) -> gr.Blocks:
                 doc_type_value,
                 api_url_value or default_api_url,
             )
+
+        refresh_btn.click(
+            fn=_fetch_corpus_info,
+            inputs=[api_url_box],
+            outputs=[corpus_info],
+        )
 
         question.submit(
             fn=_respond,
