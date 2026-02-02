@@ -54,6 +54,12 @@ vector_db/
 chroma_db/
 *.npy
 
+# Allow shipping small, curated demo artifacts
+!artifacts/manifest.json
+!artifacts/sample_questions.json
+!artifacts/vector_db/
+!artifacts/vector_db/**
+
 
 # ============================
 #  Logs

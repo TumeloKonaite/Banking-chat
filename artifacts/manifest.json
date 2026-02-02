@@ -1,0 +1,15 @@
+{
+  "corpus_name": "Banking Demo Corpus",
+  "built_at": "2026-02-02T00:00:00Z",
+  "data_dir": "data",
+  "document_count": 3,
+  "document_types": {
+    "agreements": 1,
+    "product_terms": 2
+  },
+  "embedding_provider": "openai",
+  "embedding_model": "text-embedding-3-large",
+  "chunk_size": 1000,
+  "chunk_overlap": 200,
+  "vector_db_dir": "artifacts/vector_db"
+}

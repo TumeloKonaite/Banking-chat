@@ -121,6 +121,9 @@ python -m src.build.build_index
 This writes the Chroma DB under `artifacts/vector_db/` and a `artifacts/manifest.json`
 describing the corpus (document counts, build timestamp, embedding model, etc.).
 
+For the MVP demo, the repo ships with a small prebuilt corpus under `artifacts/`.
+You can run the API + Gradio immediately without re-ingesting documents.
+
 ## Ask questions
 
 ```python

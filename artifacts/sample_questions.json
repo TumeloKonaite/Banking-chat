@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What are the key terms for using the bank's mobile or online banking services?",
+    "doc_type": "product_terms"
+  },
+  {
+    "question": "Are there any limitations or restrictions described in the remote banking agreement?",
+    "doc_type": "agreements"
+  },
+  {
+    "question": "What responsibilities does a customer have when using digital banking channels?",
+    "doc_type": "agreements"
+  },
+  {
+    "question": "Do the terms mention how changes to terms and conditions are communicated?",
+    "doc_type": "product_terms"
+  },
+  {
+    "question": "If I lose my device, what steps should I take according to the documents?",
+    "doc_type": "product_terms"
+  }
+]
