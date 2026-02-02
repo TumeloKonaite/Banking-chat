@@ -110,6 +110,17 @@ builder.build_from_chunks(chunks)        # persists Chroma DB to artifacts/vecto
 
 All artifacts are safe to commit to `.gitignore`; regenerate them on demand.
 
+### Build once for demo (prebuilt corpus)
+
+For the read-only demo flow, precompute artifacts and ship them with the app:
+
+```bash
+python -m src.build.build_index
+```
+
+This writes the Chroma DB under `artifacts/vector_db/` and a `artifacts/manifest.json`
+describing the corpus (document counts, build timestamp, embedding model, etc.).
+
 ## Ask questions
 
 ```python
@@ -138,7 +149,8 @@ The assistant enforces the banking guardrails, cites only retrieved context, and
    uvicorn src.server.app:app --host 0.0.0.0 --port 8000 --reload
    ```
 
-   This loads the pipeline once and exposes `POST /ask`, which accepts a JSON body:
+   This loads the pipeline once and exposes `POST /ask`, which accepts a JSON body.
+   The API will return `503` if prebuilt artifacts are missing.
 
    ```json
    {
