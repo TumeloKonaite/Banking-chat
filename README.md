@@ -128,8 +128,10 @@ python -m src.build.build_index
 This writes the Chroma DB under `artifacts/vector_db/` and a `artifacts/manifest.json`
 describing the corpus (document counts, build timestamp, embedding model, etc.).
 
-For the MVP demo, the repo ships with a small prebuilt corpus under `artifacts/`.
-You can run the API + Gradio immediately without re-ingesting documents.
+For the MVP demo, this repo ships with a small prebuilt corpus under `artifacts/`
+(manifest + Chroma DB). You can run the API + Gradio immediately without
+re-ingesting documents. If you remove `artifacts/`, rebuild with
+`python -m src.build.build_index`.
 
 ## Ask questions
 
@@ -256,4 +258,12 @@ If you want to skip auto-tagging for a fork, delete or edit the "Tag successful 
 
 ## License
 
-Specify the license you plan to use for the repository (for example MIT or Apache 2.0). Update this section before publishing publicly.
+MIT License. See `LICENSE`.
+
+## Repository metadata (GitHub “About”)
+
+Suggested description:
+“Demo-ready Banking RAG pipeline with prebuilt artifacts, FastAPI, and Gradio chat UI.”
+
+Suggested topics:
+`rag`, `banking`, `fastapi`, `gradio`, `langchain`, `chroma`, `llm`, `retrieval`
