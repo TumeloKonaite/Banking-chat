@@ -50,10 +50,12 @@ src/pipeline/rag_pipeline.py  -> ChatOpenAI
 
 ## Quickstart (Demo)
 1. `docker build -t banking-rag .`
-2. `docker run -p 8000:8000 -e OPENAI_API_KEY=sk-... banking-rag`
-3. `python -m src.server.gradio_ui`
+2. `docker run -p 8000:8000 -e DEMO_MODE=1 -e DEMO_API_KEY=demo-key -e OPENAI_API_KEY=sk-... banking-rag`
+3. `set DEMO_MODE=1 && set DEMO_API_KEY=demo-key && python -m src.server.gradio_ui`
 4. Open `http://localhost:7860`
 5. Ask questions (corpus is prebuilt).
+
+Demo defaults include API key auth, limited CORS, and input caps to prevent abuse.
 
 ### Prerequisites
 
@@ -180,6 +182,8 @@ The assistant enforces the banking guardrails, cites only retrieved context, and
      ]
    }
    ```
+
+   When `DEMO_MODE=1`, include `X-API-Key: <DEMO_API_KEY>` with `/ask` requests.
 
 2. **Launch the Gradio UI** (which calls the API under the hood)
 

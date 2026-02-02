@@ -19,6 +19,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
 SAMPLE_QUESTIONS_PATH = ARTIFACTS_DIR / "sample_questions.json"
 DEMO_MODE = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
+DEMO_API_KEY = os.getenv("DEMO_API_KEY", "").strip()
 
 
 ChatHistory = Sequence[Union[dict, Tuple[str, str]]]
@@ -78,8 +79,13 @@ def _chat_response(
     ).model_dump()
 
     try:
+        headers = {"x-api-key": DEMO_API_KEY} if DEMO_API_KEY else None
         with httpx.Client(timeout=60) as client:
-            resp = client.post(f"{api_url.rstrip('/')}/ask", json=payload)
+            resp = client.post(
+                f"{api_url.rstrip('/')}/ask",
+                json=payload,
+                headers=headers,
+            )
             resp.raise_for_status()
             ask_response = AskResponse(**resp.json())
             answer = _format_answer(ask_response)

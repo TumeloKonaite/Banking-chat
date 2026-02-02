@@ -7,8 +7,10 @@ import os
 from pathlib import Path
 from typing import List, Tuple
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from src.server.dependencies import get_pipeline
 from src.retrieval.document_retriever import RetrieverConfig
@@ -20,10 +22,25 @@ app = FastAPI(
     description="Ask banking questions grounded in your private PDFs.",
 )
 
+_DEMO_MODE = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
+_DEMO_API_KEY = os.getenv("DEMO_API_KEY", "").strip()
+_MAX_REQUEST_BYTES = int(os.getenv("MAX_REQUEST_BYTES", "50000"))
+_DEMO_CORS_ORIGINS = [
+    "http://localhost:7860",
+    "http://127.0.0.1:7860",
+]
+_CORS_ENV = os.getenv("DEMO_CORS_ORIGINS", "").strip()
+
+_cors_origins = ["*"]
+if _DEMO_MODE:
+    _cors_origins = _DEMO_CORS_ORIGINS
+    if _CORS_ENV:
+        _cors_origins = [origin.strip() for origin in _CORS_ENV.split(",") if origin.strip()]
+
 # Allow browser-based tooling (Gradio) to call the API easily.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,9 +55,6 @@ _MISSING_ARTIFACTS_MESSAGE = (
     "Artifacts missing. This demo expects prebuilt artifacts. "
     "Run: python -m src.build.build_index"
 )
-_DEMO_MODE = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
-
-
 def _check_artifacts() -> Tuple[bool, str]:
     if not VECTOR_DB_DIR.exists():
         return False, _MISSING_ARTIFACTS_MESSAGE
@@ -95,6 +109,10 @@ def warm_pipeline() -> None:
     Build the pipeline once when the server boots so the first request is fast.
     """
     global _READY_STATE
+    if _DEMO_MODE and not _DEMO_API_KEY:
+        raise RuntimeError(
+            "Demo mode requires DEMO_API_KEY. Set DEMO_API_KEY or disable DEMO_MODE."
+        )
     _READY_STATE = _check_artifacts()
     if _DEMO_MODE and not _READY_STATE[0]:
         raise RuntimeError(
@@ -103,6 +121,42 @@ def warm_pipeline() -> None:
         )
     if _READY_STATE[0]:
         get_pipeline()
+
+
+@app.middleware("http")
+async def request_size_guard(request: Request, call_next):
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            if int(content_length) > _MAX_REQUEST_BYTES:
+                return JSONResponse(
+                    status_code=413,
+                    content={"detail": "Request too large. Reduce question or history size."},
+                )
+        except ValueError:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": "Invalid Content-Length header."},
+            )
+    body = await request.body()
+    if body and len(body) > _MAX_REQUEST_BYTES:
+        return JSONResponse(
+            status_code=413,
+            content={"detail": "Request too large. Reduce question or history size."},
+        )
+    request._body = body
+    return await call_next(request)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": "Invalid request. Check question length, history length, and payload size.",
+            "errors": exc.errors(),
+        },
+    )
 
 
 def _build_sources(docs, max_items: int = 3) -> List[SourceDocument]:
@@ -126,12 +180,18 @@ def _build_sources(docs, max_items: int = 3) -> List[SourceDocument]:
 
 
 @app.post("/ask", response_model=AskResponse)
-def ask_question(payload: AskRequest) -> AskResponse:
+def ask_question(payload: AskRequest, request: Request) -> AskResponse:
     """
     Answer a user question via the RAG pipeline.
     """
     if not _READY_STATE[0]:
         raise HTTPException(status_code=503, detail=_READY_STATE[1])
+    if _DEMO_MODE:
+        api_key = request.headers.get("x-api-key")
+        if not api_key:
+            raise HTTPException(status_code=401, detail="Missing API key.")
+        if api_key != _DEMO_API_KEY:
+            raise HTTPException(status_code=403, detail="Invalid API key.")
     pipeline = get_pipeline()
 
     try:
