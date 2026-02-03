@@ -4,8 +4,9 @@ Modular Retrieval-Augmented Generation pipeline tuned for banking documents. Dro
 
 ## 🔴 Live Demo
 
+- Gradio UI: http://Bankin-Banki-Xuy9rfV4R0bQ-1682177220.eu-west-1.elb.amazonaws.com
 - Health: http://Bankin-Banki-Xuy9rfV4R0bQ-1682177220.eu-west-1.elb.amazonaws.com/health
-- API Docs (Swagger): http://Bankin-Banki-Xuy9rfV4R0bQ-1682177220.eu-west-1.elb.amazonaws.com/docs
+- API Docs (Swagger): http://Bankin-Banki-Xuy9rfV4R0bQ-1682177220.eu-west-1.elb.amazonaws.com/api/docs
 
 Deployed on AWS ECS Fargate behind an Application Load Balancer using AWS CDK (CloudFormation).
 

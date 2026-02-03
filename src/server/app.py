@@ -20,6 +20,8 @@ app = FastAPI(
     title="Banking RAG API",
     version="0.1.0",
     description="Ask banking questions grounded in your private PDFs.",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
 )
 
 _DEMO_MODE = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
@@ -30,6 +32,7 @@ _DEMO_CORS_ORIGINS = [
     "http://127.0.0.1:7860",
 ]
 _CORS_ENV = os.getenv("DEMO_CORS_ORIGINS", "").strip()
+_SHOW_GRADIO = os.getenv("SHOW_GRADIO", "").strip().lower() in {"1", "true", "yes", "on"}
 
 _cors_origins = ["*"]
 if _DEMO_MODE:
@@ -45,6 +48,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+if _DEMO_MODE or _SHOW_GRADIO:
+    import gradio as gr
+
+    from src.server.gradio_ui import build_interface, DEFAULT_API_URL
+
+    demo = build_interface(DEFAULT_API_URL)
+    app = gr.mount_gradio_app(app, demo, path="/")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
