@@ -40,13 +40,3 @@ jobs:
       - name: Smoke test evaluation
         if: env.OPENAI_API_KEY != ''
         run: python -m src.evaluation.eval 0
-
-      - name: Tag successful build
-        if: github.ref == 'refs/heads/main'
-        env:
-          TAG_NAME: ci-${{ github.run_number }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag "$TAG_NAME"
-          git push origin "$TAG_NAME"
