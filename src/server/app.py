@@ -10,7 +10,7 @@ from typing import List, Tuple
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from src.server.dependencies import get_pipeline
 from src.retrieval.document_retriever import RetrieverConfig
@@ -237,7 +237,17 @@ def _mount_gradio() -> None:
     from src.server.gradio_ui import build_interface, DEFAULT_API_URL
 
     demo = build_interface(DEFAULT_API_URL)
-    gr.mount_gradio_app(app, demo, path="/")
+    gr.mount_gradio_app(app, demo, path="/gradio")
+
+
+@app.get("/")
+def root() -> RedirectResponse:
+    """
+    Send browsers to the Gradio UI while keeping /health available for ALB checks.
+    """
+    if _DEMO_MODE or _SHOW_GRADIO:
+        return RedirectResponse(url="/gradio", status_code=307)
+    return RedirectResponse(url="/api/docs", status_code=307)
 
 
 _mount_gradio()

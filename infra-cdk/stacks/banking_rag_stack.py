@@ -97,5 +97,6 @@ class BankingRagStack(Stack):
         # Outputs
         CfnOutput(self, "AlbDnsName", value=service.load_balancer.load_balancer_dns_name)
         CfnOutput(self, "EcrRepoUri", value=repo.repository_uri)
-        CfnOutput(self, "DocsUrl", value=f"http://{service.load_balancer.load_balancer_dns_name}/docs")
+        CfnOutput(self, "GradioUrl", value=f"http://{service.load_balancer.load_balancer_dns_name}")
+        CfnOutput(self, "DocsUrl", value=f"http://{service.load_balancer.load_balancer_dns_name}/api/docs")
         CfnOutput(self, "HealthUrl", value=f"http://{service.load_balancer.load_balancer_dns_name}/health")
