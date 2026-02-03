@@ -48,6 +48,32 @@ def _history_to_messages(history: ChatHistory | None) -> List[dict]:
     return messages
 
 
+def _history_to_pairs(history: ChatHistory | None) -> List[Tuple[str, str]]:
+    """
+    Convert history into Gradio's tuple-based chat format.
+    """
+    pairs: List[Tuple[str, str]] = []
+    if not history:
+        return pairs
+
+    if isinstance(history[0], dict):
+        pending_user = None
+        for entry in history:
+            role = entry.get("role")
+            content = entry.get("content")
+            if role == "user":
+                pending_user = content
+            elif role == "assistant" and pending_user is not None:
+                pairs.append((pending_user, content))
+                pending_user = None
+        return pairs
+
+    for entry in history:
+        if isinstance(entry, (list, tuple)) and len(entry) == 2:
+            pairs.append((entry[0], entry[1]))
+    return pairs
+
+
 def _format_answer(response: AskResponse) -> str:
     """
     Append source metadata to the answer for convenient referencing in the UI.
@@ -68,7 +94,7 @@ def _chat_response(
     history: ChatHistory | None,
     doc_type: str | None,
     api_url: str,
-) -> List[dict]:
+) -> List[Tuple[str, str]]:
     """
     Call the FastAPI endpoint and return the updated chat history.
     """
@@ -92,9 +118,8 @@ def _chat_response(
     except Exception as exc:  # pragma: no cover - UI feedback only
         answer = f"Error talking to API: {exc}"
 
-    updated_history: List[dict] = list(_history_to_messages(history))
-    updated_history.append({"role": "user", "content": message})
-    updated_history.append({"role": "assistant", "content": answer})
+    updated_history = _history_to_pairs(history)
+    updated_history.append((message, answer))
     return updated_history
 
 
@@ -214,11 +239,7 @@ def build_interface(default_api_url: str = DEFAULT_API_URL) -> gr.Blocks:
             value="All",
         )
 
-        chatbot = gr.Chatbot(
-            height=420,
-            type="messages",
-            allow_tags=False,
-        )
+        chatbot = gr.Chatbot(height=420, allow_tags=False)
 
         question = gr.Textbox(
             label="Ask a banking question",
