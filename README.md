@@ -2,6 +2,13 @@
 
 Modular Retrieval-Augmented Generation pipeline tuned for banking documents. Drop your PDFs into the `data/` folder, run the build script, and start asking questions grounded entirely in your own content.
 
+## 🔴 Live Demo
+
+- Health: http://Bankin-Banki-Xuy9rfV4R0bQ-1682177220.eu-west-1.elb.amazonaws.com/health
+- API Docs (Swagger): http://Bankin-Banki-Xuy9rfV4R0bQ-1682177220.eu-west-1.elb.amazonaws.com/docs
+
+Deployed on AWS ECS Fargate behind an Application Load Balancer using AWS CDK (CloudFormation).
+
 ## Drag-and-drop workflow
 
 1. **Drop documents** - Organise raw PDFs under `data/<doc_type>/` (for example `data/product_terms/`, `data/pricing_guides/`). Each folder becomes a metadata tag so you can later filter answers per collection.
