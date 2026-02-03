@@ -32,7 +32,6 @@ _DEMO_CORS_ORIGINS = [
     "http://127.0.0.1:7860",
 ]
 _CORS_ENV = os.getenv("DEMO_CORS_ORIGINS", "").strip()
-_SHOW_GRADIO = os.getenv("SHOW_GRADIO", "").strip().lower() in {"1", "true", "yes", "on"}
 
 _cors_origins = ["*"]
 if _DEMO_MODE:
@@ -48,14 +47,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-if _DEMO_MODE or _SHOW_GRADIO:
-    import gradio as gr
-
-    from src.server.gradio_ui import build_interface, DEFAULT_API_URL
-
-    demo = build_interface(DEFAULT_API_URL)
-    app = gr.mount_gradio_app(app, demo, path="/")
+_SHOW_GRADIO = os.getenv("SHOW_GRADIO", "").strip().lower() in {"1", "true", "yes", "on"}
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
@@ -236,6 +228,19 @@ def health() -> dict:
     Lightweight liveness check.
     """
     return {"status": "ok"}
+
+
+def _mount_gradio() -> None:
+    if not (_DEMO_MODE or _SHOW_GRADIO):
+        return
+    import gradio as gr
+    from src.server.gradio_ui import build_interface, DEFAULT_API_URL
+
+    demo = build_interface(DEFAULT_API_URL)
+    gr.mount_gradio_app(app, demo, path="/")
+
+
+_mount_gradio()
 
 
 if __name__ == "__main__":
