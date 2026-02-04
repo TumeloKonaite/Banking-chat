@@ -204,6 +204,7 @@ X-API-Key: <DEMO_API_KEY>
 - ECS task image is pulled from ECR repo `banking-rag`.
 - `OPENAI_API_KEY` is read from AWS Secrets Manager (`banking-rag/openai-api-key`).
 - `DEMO_API_KEY` is provided at deploy/runtime.
+- Ops runbook for monitoring/redeploy: `docs/ops.md`.
 
 ## CI
 
