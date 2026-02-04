@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 from typing import List, Tuple
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,6 +24,8 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
 )
+
+load_dotenv(override=False)
 
 _DEMO_MODE = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
 _DEMO_API_KEY = os.getenv("DEMO_API_KEY", "").strip()
@@ -50,13 +53,17 @@ app.add_middleware(
 _SHOW_GRADIO = os.getenv("SHOW_GRADIO", "").strip().lower() in {"1", "true", "yes", "on"}
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
-VECTOR_DB_DIR = ARTIFACTS_DIR / "vector_db"
-MANIFEST_PATH = ARTIFACTS_DIR / "manifest.json"
+ARTIFACTS_DIR = Path(os.getenv("ARTIFACTS_DIR", str(PROJECT_ROOT / "artifacts"))).expanduser()
+VECTOR_DB_DIR = Path(
+    os.getenv("VECTOR_DB_DIR", str(ARTIFACTS_DIR / "vector_db"))
+).expanduser()
+MANIFEST_PATH = Path(
+    os.getenv("MANIFEST_PATH", str(ARTIFACTS_DIR / "manifest.json"))
+).expanduser()
 _READY_STATE: Tuple[bool, str] = (False, "Not initialized")
 _MISSING_ARTIFACTS_MESSAGE = (
     "Artifacts missing. This demo expects prebuilt artifacts. "
-    "Run: python -m src.build.build_index"
+    "Run: make build-index (or python -m src.pipeline.build_artifacts)"
 )
 def _check_artifacts() -> Tuple[bool, str]:
     if not VECTOR_DB_DIR.exists():
