@@ -34,6 +34,12 @@ jobs:
       - name: Byte-compile sources
         run: python -m compileall src
 
+      - name: Deterministic reliability tests
+        env:
+          DEMO_MODE: "0"
+          SHOW_GRADIO: "0"
+        run: pytest -q src/tests
+
       - name: Docker build
         run: docker build -t banking-rag-ci .
 

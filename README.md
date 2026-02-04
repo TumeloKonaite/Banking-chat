@@ -205,6 +205,7 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs on pushes/PRs to `main
 
 - Ruff lint (`ruff check .`)
 - Python byte-compile (`python -m compileall src`)
+- deterministic reliability suite (`pytest -q src/tests`) covering API contracts, artifact manifest validation, and retrieval behavior
 - Docker build (`docker build -t banking-rag-ci .`)
 - optional evaluation smoke test when `OPENAI_API_KEY` secret is present
 
