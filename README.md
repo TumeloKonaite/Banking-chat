@@ -1,4 +1,5 @@
-# Banking RAG [![CI](https://github.com/TumeloKonaite/Banking-RAG/actions/workflows/ci.yml/badge.svg)](https://github.com/TumeloKonaite/Banking-RAG/actions/workflows/ci.yml)
+# Banking RAG
+[![CI](https://github.com/TumeloKonaite/Banking-RAG/actions/workflows/ci.yml/badge.svg)](https://github.com/TumeloKonaite/Banking-RAG/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/)
 [![Development Status](https://img.shields.io/badge/Status-Active-success.svg)](#development-status)
