@@ -23,6 +23,9 @@ COPY pyproject.toml README.md ./
 # Copy source code
 COPY src ./src
 
+# Copy prebuilt demo artifacts
+COPY artifacts ./artifacts
+
 # Optional: copy notebooks/artifacts if needed (commented out)
 # COPY notebooks ./notebooks
 

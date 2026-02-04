@@ -1,0 +1,1076 @@
+{
+ "Resources": {
+  "BankingRagVpc53B6A009": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/Resource"
+   }
+  },
+  "BankingRagVpcPublicSubnet1Subnet7B8E9B74": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet1/Subnet"
+   }
+  },
+  "BankingRagVpcPublicSubnet1RouteTableD00A025D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "BankingRagVpcPublicSubnet1RouteTableAssociation87C4C1A1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "BankingRagVpcPublicSubnet1RouteTableD00A025D"
+    },
+    "SubnetId": {
+     "Ref": "BankingRagVpcPublicSubnet1Subnet7B8E9B74"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "BankingRagVpcPublicSubnet1DefaultRoute3E40D5DE": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "BankingRagVpcIGWF3B4A1B8"
+    },
+    "RouteTableId": {
+     "Ref": "BankingRagVpcPublicSubnet1RouteTableD00A025D"
+    }
+   },
+   "DependsOn": [
+    "BankingRagVpcVPCGWCEF96561"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "BankingRagVpcPublicSubnet1EIP5307BC12": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet1/EIP"
+   }
+  },
+  "BankingRagVpcPublicSubnet1NATGateway9B4C6EF6": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "BankingRagVpcPublicSubnet1EIP5307BC12",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "BankingRagVpcPublicSubnet1Subnet7B8E9B74"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "BankingRagVpcPublicSubnet1DefaultRoute3E40D5DE",
+    "BankingRagVpcPublicSubnet1RouteTableAssociation87C4C1A1"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "BankingRagVpcPublicSubnet2SubnetB884971B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet2/Subnet"
+   }
+  },
+  "BankingRagVpcPublicSubnet2RouteTable7638E3F9": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "BankingRagVpcPublicSubnet2RouteTableAssociation5AC34E42": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "BankingRagVpcPublicSubnet2RouteTable7638E3F9"
+    },
+    "SubnetId": {
+     "Ref": "BankingRagVpcPublicSubnet2SubnetB884971B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "BankingRagVpcPublicSubnet2DefaultRoute9C82A890": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "BankingRagVpcIGWF3B4A1B8"
+    },
+    "RouteTableId": {
+     "Ref": "BankingRagVpcPublicSubnet2RouteTable7638E3F9"
+    }
+   },
+   "DependsOn": [
+    "BankingRagVpcVPCGWCEF96561"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "BankingRagVpcPrivateSubnet1SubnetC5B5ECA1": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "BankingRagVpcPrivateSubnet1RouteTableEEFC1D7A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "BankingRagVpcPrivateSubnet1RouteTableAssociation408DFDCE": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "BankingRagVpcPrivateSubnet1RouteTableEEFC1D7A"
+    },
+    "SubnetId": {
+     "Ref": "BankingRagVpcPrivateSubnet1SubnetC5B5ECA1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "BankingRagVpcPrivateSubnet1DefaultRoute0DFB1EE6": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "BankingRagVpcPublicSubnet1NATGateway9B4C6EF6"
+    },
+    "RouteTableId": {
+     "Ref": "BankingRagVpcPrivateSubnet1RouteTableEEFC1D7A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "BankingRagVpcPrivateSubnet2Subnet2BA8341A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "BankingRagVpcPrivateSubnet2RouteTable7E836F75": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "BankingRagVpcPrivateSubnet2RouteTableAssociationD0DE809F": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "BankingRagVpcPrivateSubnet2RouteTable7E836F75"
+    },
+    "SubnetId": {
+     "Ref": "BankingRagVpcPrivateSubnet2Subnet2BA8341A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "BankingRagVpcPrivateSubnet2DefaultRouteD6B388CB": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "BankingRagVpcPublicSubnet1NATGateway9B4C6EF6"
+    },
+    "RouteTableId": {
+     "Ref": "BankingRagVpcPrivateSubnet2RouteTable7E836F75"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "BankingRagVpcIGWF3B4A1B8": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "BankingRagStack/BankingRagVpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/IGW"
+   }
+  },
+  "BankingRagVpcVPCGWCEF96561": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "BankingRagVpcIGWF3B4A1B8"
+    },
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagVpc/VPCGW"
+   }
+  },
+  "BankingRagCluster33891364": {
+   "Type": "AWS::ECS::Cluster",
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagCluster/Resource"
+   }
+  },
+  "BankingRagRepo17CB2470": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true,
+    "RepositoryName": "banking-rag"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagRepo/Resource"
+   }
+  },
+  "BankingRagLogGroup487BEFFD": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/ecs/banking-rag",
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagLogGroup/Resource"
+   }
+  },
+  "BankingRagServiceLBF23DD0AD": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "BankingRagServiceLBSecurityGroupE878BBAA",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "BankingRagVpcPublicSubnet1Subnet7B8E9B74"
+     },
+     {
+      "Ref": "BankingRagVpcPublicSubnet2SubnetB884971B"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "BankingRagVpcPublicSubnet1DefaultRoute3E40D5DE",
+    "BankingRagVpcPublicSubnet1RouteTableAssociation87C4C1A1",
+    "BankingRagVpcPublicSubnet2DefaultRoute9C82A890",
+    "BankingRagVpcPublicSubnet2RouteTableAssociation5AC34E42"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/LB/Resource"
+   }
+  },
+  "BankingRagServiceLBSecurityGroupE878BBAA": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB BankingRagStackBankingRagServiceLB7B58EA8E",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/LB/SecurityGroup/Resource"
+   }
+  },
+  "BankingRagServiceLBSecurityGrouptoBankingRagStackBankingRagServiceSecurityGroupCCE9CA168000E8D54684": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "BankingRagServiceSecurityGroup1D639696",
+      "GroupId"
+     ]
+    },
+    "FromPort": 8000,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "BankingRagServiceLBSecurityGroupE878BBAA",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 8000
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/LB/SecurityGroup/to BankingRagStackBankingRagServiceSecurityGroupCCE9CA16:8000"
+   }
+  },
+  "BankingRagServiceLBPublicListener8DB10F5D": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "BankingRagServiceLBPublicListenerECSGroupE2B96AB9"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "BankingRagServiceLBF23DD0AD"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/LB/PublicListener/Resource"
+   }
+  },
+  "BankingRagServiceLBPublicListenerECSGroupE2B96AB9": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckIntervalSeconds": 30,
+    "HealthCheckPath": "/health",
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/LB/PublicListener/ECSGroup/Resource"
+   }
+  },
+  "BankingRagServiceTaskDefTaskRole6E93D3E0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/TaskDef/TaskRole/Resource"
+   }
+  },
+  "BankingRagServiceTaskDef3BF7767C": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "DEMO_MODE",
+        "Value": "true"
+       },
+       {
+        "Name": "DEMO_API_KEY",
+        "Value": "demo-key"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           4,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "BankingRagRepo17CB2470",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ".dkr.ecr.",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "BankingRagRepo17CB2470",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Ref": "BankingRagRepo17CB2470"
+         },
+         ":latest"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "BankingRagLogGroup487BEFFD"
+        },
+        "awslogs-stream-prefix": "banking-rag",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "Name": "web",
+      "PortMappings": [
+       {
+        "ContainerPort": 8000,
+        "Protocol": "tcp"
+       }
+      ],
+      "Secrets": [
+       {
+        "Name": "OPENAI_API_KEY",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":secretsmanager:us-east-1:194722416872:secret:banking-rag/openai-api-key"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "Cpu": "512",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "BankingRagServiceTaskDefExecutionRole2D4F4B08",
+      "Arn"
+     ]
+    },
+    "Family": "BankingRagStackBankingRagServiceTaskDef3CCC8114",
+    "Memory": "1024",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "BankingRagServiceTaskDefTaskRole6E93D3E0",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/TaskDef/Resource"
+   }
+  },
+  "BankingRagServiceTaskDefExecutionRole2D4F4B08": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/TaskDef/ExecutionRole/Resource"
+   }
+  },
+  "BankingRagServiceTaskDefExecutionRoleDefaultPolicy37751756": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "BankingRagRepo17CB2470",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "BankingRagLogGroup487BEFFD",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":secretsmanager:us-east-1:194722416872:secret:banking-rag/openai-api-key-??????"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BankingRagServiceTaskDefExecutionRoleDefaultPolicy37751756",
+    "Roles": [
+     {
+      "Ref": "BankingRagServiceTaskDefExecutionRole2D4F4B08"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/TaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "BankingRagService9E8F8961": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "BankingRagCluster33891364"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "web",
+      "ContainerPort": 8000,
+      "TargetGroupArn": {
+       "Ref": "BankingRagServiceLBPublicListenerECSGroupE2B96AB9"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "BankingRagServiceSecurityGroup1D639696",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "BankingRagVpcPrivateSubnet1SubnetC5B5ECA1"
+       },
+       {
+        "Ref": "BankingRagVpcPrivateSubnet2Subnet2BA8341A"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": {
+     "Ref": "BankingRagServiceTaskDef3BF7767C"
+    }
+   },
+   "DependsOn": [
+    "BankingRagServiceLBPublicListenerECSGroupE2B96AB9",
+    "BankingRagServiceLBPublicListener8DB10F5D",
+    "BankingRagServiceTaskDefTaskRole6E93D3E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/Service/Service"
+   }
+  },
+  "BankingRagServiceSecurityGroup1D639696": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "BankingRagStack/BankingRagService/Service/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "BankingRagVpc53B6A009"
+    }
+   },
+   "DependsOn": [
+    "BankingRagServiceTaskDefTaskRole6E93D3E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/Service/SecurityGroup/Resource"
+   }
+  },
+  "BankingRagServiceSecurityGroupfromBankingRagStackBankingRagServiceLBSecurityGroupDB85CD2080008CBCD481": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "FromPort": 8000,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "BankingRagServiceSecurityGroup1D639696",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "BankingRagServiceLBSecurityGroupE878BBAA",
+      "GroupId"
+     ]
+    },
+    "ToPort": 8000
+   },
+   "DependsOn": [
+    "BankingRagServiceTaskDefTaskRole6E93D3E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/BankingRagService/Service/SecurityGroup/from BankingRagStackBankingRagServiceLBSecurityGroupDB85CD20:8000"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31Sy27CMBD8lt6Ny+PEkVKKkFAbJYgr2jhL2GLsyF6DUJR/r5IAiWjV086Ox96ZlcdyNB3K4Qtc/EBlx4GmVJYJgzqKGL0NTqGAi9+VqMay3BZKzPdmG81FFFJNKgmpQa65DsU2MG4g1djxHTfz3ioCJmse4hosVlFdPoGXwHiBq4gcnYGxe3hlGJ3Bh6B1cutmzKAOJzQsElTBEV+Xzoai8fAvscgdev+LXpmGrwQqL8u5Dp7R1ao7/ACXQ53KH99xT4bumZ4ZaxjIoOtxt7sJujOpdk8trMc5WcZYWE9sXZOy6yqhbe5lubb5I8wdN053BXC9JS9nRaFJNYteW8jeQINRmD1NRg2eSWkLWdooyOTnsSz/vu3aeb2+ryPPaG6aO+6db8DlyA/bvbYSBCdZxrb9Mk2NrCbVpG9RVdX4K3ARuBLRlQ/WvE7kaCKnL9+eaOCCYTqhjNv6AwPBq93ZAgAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BankingRagStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "BankingRagServiceLoadBalancerDNSDB24E245": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BankingRagServiceLBF23DD0AD",
+     "DNSName"
+    ]
+   }
+  },
+  "BankingRagServiceServiceURLE53ACB79": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "BankingRagServiceLBF23DD0AD",
+        "DNSName"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "AlbDnsName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BankingRagServiceLBF23DD0AD",
+     "DNSName"
+    ]
+   }
+  },
+  "EcrRepoUri": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "BankingRagRepo17CB2470",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "BankingRagRepo17CB2470",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "BankingRagRepo17CB2470"
+      }
+     ]
+    ]
+   }
+  },
+  "GradioUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "BankingRagServiceLBF23DD0AD",
+        "DNSName"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "DocsUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "BankingRagServiceLBF23DD0AD",
+        "DNSName"
+       ]
+      },
+      "/api/docs"
+     ]
+    ]
+   }
+  },
+  "HealthUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "BankingRagServiceLBF23DD0AD",
+        "DNSName"
+       ]
+      },
+      "/health"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

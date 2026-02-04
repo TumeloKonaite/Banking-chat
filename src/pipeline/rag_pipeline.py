@@ -1,6 +1,7 @@
 # src/rag/pipeline.py
 
 from dataclasses import dataclass
+import sys
 from typing import List, Dict, Tuple, Optional
 
 from dotenv import load_dotenv
@@ -113,7 +114,7 @@ class RAGPipeline:
             )
         except Exception as e:
             logging.error("Error initialising ChatOpenAI in RAGPipeline", exc_info=True)
-            raise CustomException(e)
+            raise CustomException(e, sys)
 
     def _combined_question(self, question: str, history: List[Dict] | None) -> str:
         """
@@ -191,7 +192,7 @@ class RAGPipeline:
 
         except Exception as e:
             logging.error("Error in RAGPipeline.answer_question", exc_info=True)
-            raise CustomException(e)
+            raise CustomException(e, sys)
 
 
 if __name__ == "__main__":

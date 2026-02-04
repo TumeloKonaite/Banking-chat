@@ -10,7 +10,7 @@ from typing import List, Tuple
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from src.server.dependencies import get_pipeline
 from src.retrieval.document_retriever import RetrieverConfig
@@ -20,6 +20,8 @@ app = FastAPI(
     title="Banking RAG API",
     version="0.1.0",
     description="Ask banking questions grounded in your private PDFs.",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
 )
 
 _DEMO_MODE = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
@@ -45,6 +47,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+_SHOW_GRADIO = os.getenv("SHOW_GRADIO", "").strip().lower() in {"1", "true", "yes", "on"}
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
@@ -225,6 +228,29 @@ def health() -> dict:
     Lightweight liveness check.
     """
     return {"status": "ok"}
+
+
+def _mount_gradio() -> None:
+    if not (_DEMO_MODE or _SHOW_GRADIO):
+        return
+    import gradio as gr
+    from src.server.gradio_ui import build_interface, DEFAULT_API_URL
+
+    demo = build_interface(DEFAULT_API_URL)
+    gr.mount_gradio_app(app, demo, path="/gradio")
+
+
+@app.get("/")
+def root() -> RedirectResponse:
+    """
+    Send browsers to the Gradio UI while keeping /health available for ALB checks.
+    """
+    if _DEMO_MODE or _SHOW_GRADIO:
+        return RedirectResponse(url="/gradio", status_code=307)
+    return RedirectResponse(url="/api/docs", status_code=307)
+
+
+_mount_gradio()
 
 
 if __name__ == "__main__":

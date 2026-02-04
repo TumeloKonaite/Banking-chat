@@ -1,273 +1,127 @@
 # Banking RAG [![CI](https://github.com/TumeloKonaite/Banking-RAG/actions/workflows/ci.yml/badge.svg)](https://github.com/TumeloKonaite/Banking-RAG/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.12%2B-blue.svg)](https://www.python.org/)
+[![Development Status](https://img.shields.io/badge/Status-Active-success.svg)](#development-status)
+[![Git Workflow](https://img.shields.io/badge/GitHub-Flow-blue.svg)](https://docs.github.com/en/get-started/quickstart/github-flow)
+[![Docker Ready](https://img.shields.io/badge/Docker-Ready-blue.svg)](#docker-quick-start)
 
-Modular Retrieval-Augmented Generation pipeline tuned for banking documents. Drop your PDFs into the `data/` folder, run the build script, and start asking questions grounded entirely in your own content.
+Demo-ready Retrieval-Augmented Generation (RAG) app for banking documents.
+It ships with prebuilt artifacts, serves a FastAPI backend, and exposes a Gradio UI.
 
-## Drag-and-drop workflow
+## Development Status
 
-1. **Drop documents** - Organise raw PDFs under `data/<doc_type>/` (for example `data/product_terms/`, `data/pricing_guides/`). Each folder becomes a metadata tag so you can later filter answers per collection.
-2. **Chunk and vectorise** - Run the ingestion script (see below) to load PDFs, create overlapping chunks, embed them, and persist a Chroma vector store to `artifacts/vector_db/`.
-3. **Ask questions** - Instantiate `src.pipeline.rag_pipeline.RAGPipeline` and call `answer_question(...)`. The assistant retrieves the most relevant chunks and answers only with the supplied context while applying strict guardrails.
+Active development. The deployed demo and this repo are kept aligned, with fixes shipped continuously.
 
-## Architecture at a glance
+## Live Demo
 
-```
-data/<doc_type>/*.pdf
-        |
-        v  fetch_documents()
-src/chunking/document_chunking.py
-        |
-        v  create_chunks()
-artifacts/chunks/chunks.csv
-        |
-        v
-src/embedding/document_embedding.py
-        |
-        v  create_embeddings()
-artifacts/embeddings/embeddings.pkl
-        |
-        v
-src/vectorstore/vector_store.py
-        |
-        v  build_from_chunks()
-artifacts/vector_db/  (Chroma)
-        |
-        v
-src/retrieval/document_retriever.py
-        |
-        v
-src/pipeline/rag_pipeline.py  -> ChatOpenAI
-```
+- Gradio UI: http://bankin-banki-xuy9rfv4r0bq-1682177220.eu-west-1.elb.amazonaws.com/gradio/
+- Health: http://bankin-banki-xuy9rfv4r0bq-1682177220.eu-west-1.elb.amazonaws.com/health
+- API docs: http://bankin-banki-xuy9rfv4r0bq-1682177220.eu-west-1.elb.amazonaws.com/api/docs
 
-## Key features
+Deployed on AWS ECS Fargate behind an Application Load Balancer, provisioned with CDK.
 
-- **True drag-and-drop ingestion:** add PDFs to `data/` and rerun the builder, no manual metadata work required.
-- **Swappable embeddings:** flip between OpenAI (`text-embedding-3-large`) and HuggingFace (`all-MiniLM-L6-v2`) via config.
-- **Persistent vector store:** Chroma DB on disk means you rebuild only when documents change.
-- **Prompt-injection-resistant assistant:** the system prompt encodes strict banking-specific guardrails.
-- **Notebook-friendly:** everything is modular and importable for ad-hoc experiments inside `notebooks/`.
+## Current app behavior
 
-## Getting started
+- `GET /` redirects to `/gradio` in demo mode.
+- `POST /ask` is protected by `X-API-Key` when `DEMO_MODE=1`.
+- `GET /health` is a liveness check.
+- `GET /ready` validates prebuilt artifacts and returns corpus metadata.
+- Gradio is mounted under `/gradio` and calls the API on the same host.
 
-## Quickstart (Demo)
-1. `docker build -t banking-rag .`
-2. `docker run -p 8000:8000 -e DEMO_MODE=1 -e DEMO_API_KEY=demo-key -e OPENAI_API_KEY=sk-... banking-rag`
-3. `set DEMO_MODE=1 && set DEMO_API_KEY=demo-key && python -m src.server.gradio_ui`
-4. Open `http://localhost:7860`
-5. Ask questions (corpus is prebuilt).
+## Safety defaults (demo mode)
 
-Demo defaults include API key auth, limited CORS, and input caps to prevent abuse.
+When `DEMO_MODE=1`, the server enforces:
 
-### Prerequisites
+- API key auth (`DEMO_API_KEY`) for `/ask`
+- locked-down CORS defaults for local UI origins
+- request size and schema validation limits
+- fail-fast startup if artifacts are missing
 
-- Python 3.13 (managed via `uv` or `pyenv`)
-- An OpenAI API key (or HuggingFace token if you switch providers)
-- System packages needed by `pypdf` and `unstructured` (Poppler/Ghostscript on some Linux distros)
-
-### Installation
+## Docker Quick Start
 
 ```bash
-git clone https://github.com/<your-account>/banking-rag.git
-cd banking-rag
-uv sync           # or: python -m venv .venv && source .venv/bin/activate && pip install -e .
+# 1) Build image
+docker build -t banking-rag .
+
+# 2) Run API + mounted Gradio UI in one container
+docker run -p 8000:8000 \
+  -e DEMO_MODE=1 \
+  -e DEMO_API_KEY=demo-key \
+  -e OPENAI_API_KEY=sk-... \
+  banking-rag
 ```
 
-Create a `.env` file (or edit the existing one) with the credentials you want to use:
+Open:
 
-```bash
-OPENAI_API_KEY=sk-...
-# Optional if you switch providers
-HF_TOKEN=hf-...
-```
+- `http://localhost:8000/gradio/`
+- `http://localhost:8000/api/docs`
 
-### Project layout
+## Build / rebuild corpus artifacts
 
-- `data/` - drag-and-drop PDFs grouped by document type
-- `artifacts/chunks/` - CSV export of chunk metadata and text
-- `artifacts/embeddings/` - pickled embeddings, texts, and metadata
-- `artifacts/vector_db/` - persisted Chroma database
-- `src/ingestion/` - DirectoryLoader + PyPDFLoader wiring
-- `src/chunking/` - RecursiveCharacterTextSplitter wrapper
-- `src/embedding/` - OpenAI or HuggingFace embedding factory
-- `src/vectorstore/` - vector store builder
-- `src/retrieval/` - Chroma retriever with metadata filters
-- `src/pipeline/` - guardrailed ChatOpenAI RAG pipeline
-- `src/server/` - FastAPI endpoint and Gradio chat UI
-- `src/evaluation/` - LLM-as-a-judge tooling and CLI
-- `src/tests/` - JSONL fixtures plus helper models
-- `notebooks/` - optional exploratory work
-
-## Build the knowledge base
-
-Run the following script (or adapt it into your own CLI) whenever you drop new files in `data/`:
-
-```python
-from src.ingestion.load_documents import fetch_documents
-from src.chunking.document_chunking import DocumentChunking
-from src.embedding.document_embedding import DocumentEmbedding
-from src.vectorstore.vector_store import VectorStoreBuilder
-
-docs = fetch_documents()                 # scans data/<doc_type> folders
-chunker = DocumentChunking()
-_, chunks = chunker.create_chunks(docs)  # writes artifacts/chunks/chunks.csv
-
-embedder = DocumentEmbedding()
-embedder.create_embeddings(chunks)       # writes artifacts/embeddings/embeddings.pkl
-
-builder = VectorStoreBuilder()
-builder.build_from_chunks(chunks)        # persists Chroma DB to artifacts/vector_db/
-```
-
-All artifacts are safe to commit to `.gitignore`; regenerate them on demand.
-
-### Build once for demo (prebuilt corpus)
-
-For the read-only demo flow, precompute artifacts and ship them with the app:
+Use this when your `data/` PDFs change:
 
 ```bash
 python -m src.build.build_index
 ```
 
-This writes the Chroma DB under `artifacts/vector_db/` and a `artifacts/manifest.json`
-describing the corpus (document counts, build timestamp, embedding model, etc.).
+This writes:
 
-For the MVP demo, this repo ships with a small prebuilt corpus under `artifacts/`
-(manifest + Chroma DB). You can run the API + Gradio immediately without
-re-ingesting documents. If you remove `artifacts/`, rebuild with
-`python -m src.build.build_index`.
+- `artifacts/vector_db/` (Chroma DB)
+- `artifacts/manifest.json` (corpus metadata)
 
-## Ask questions
+## API request format (`POST /ask`)
 
-```python
-from src.pipeline.rag_pipeline import RAGPipeline
-
-pipeline = RAGPipeline()  # uses DocumentRetriever and ChatOpenAI under the hood
-
-answer, docs = pipeline.answer_question(
-    question="Explain the monthly ATM withdrawal fees.",
-    history=[],                    # optional OpenAI-style message list
-    doc_type="product_terms"       # optional metadata filter
-)
-
-print(answer)
-for d in docs[:3]:
-    print(d.metadata["source"], d.page_content[:200])
+```json
+{
+  "question": "Explain ATM withdrawal fees.",
+  "doc_type": "product_terms",
+  "history": [
+    {"role": "user", "content": "Previous question"},
+    {"role": "assistant", "content": "Previous answer"}
+  ]
+}
 ```
 
-The assistant enforces the banking guardrails, cites only retrieved context, and gracefully declines when the corpus lacks the requested information.
+In demo mode, include header:
 
-## Serve over FastAPI + Gradio
-
-1. **Start the API**
-
-   ```bash
-   uvicorn src.server.app:app --host 0.0.0.0 --port 8000 --reload
-   ```
-
-   This loads the pipeline once and exposes `POST /ask`, which accepts a JSON body.
-   The API will return `503` if prebuilt artifacts are missing.
-
-   The readiness endpoints:
-
-   - `GET /health` returns `200` when the server is up.
-   - `GET /ready` returns `200` only when prebuilt artifacts are present. When missing,
-     it returns `503` with guidance to run `python -m src.build.build_index`.
-
-   ```json
-   {
-     "question": "Explain the ATM withdrawal fees.",
-     "doc_type": "product_terms",
-     "history": [
-       {"role": "user", "content": "Previous question"},
-       {"role": "assistant", "content": "Earlier answer"}
-     ]
-   }
-   ```
-
-   When `DEMO_MODE=1`, include `X-API-Key: <DEMO_API_KEY>` with `/ask` requests.
-
-2. **Launch the Gradio UI** (which calls the API under the hood)
-
-   ```bash
-   python -m src.server.gradio_ui
-   ```
-
-   Point the UI at your API base URL (defaults to `http://localhost:8000`), optionally set a `doc_type` filter, and chat. Answers include a quick list of the retrieved source documents for transparency.
-
-## Run with Docker
-
-Build the container and run the API without installing anything locally:
-
-```bash
-docker build -t banking-rag .
-
-docker run \
-  -p 8000:8000 \
-  -e OPENAI_API_KEY=sk-... \
-  -v "$(pwd)/data:/app/data" \
-  -v "$(pwd)/artifacts:/app/artifacts" \
-  banking-rag
+```text
+X-API-Key: <DEMO_API_KEY>
 ```
 
-Mounting `data/` and `artifacts/` keeps your PDFs and vector DB on the host. Once the container is running, hit `http://localhost:8000/ask` (POST) or launch the Gradio UI separately and target the same base URL.
+## Project layout
 
-## Evaluate the pipeline
+- `src/server/` - FastAPI app, schemas, Gradio UI
+- `src/pipeline/` - RAG orchestration and guardrails
+- `src/retrieval/` - document retrieval over Chroma
+- `src/embedding/` - embedding provider wiring
+- `src/chunking/` - text chunking
+- `src/build/` - artifact build entrypoint
+- `artifacts/` - prebuilt demo corpus + manifest
+- `infra-cdk/` - AWS CDK deployment stack
 
-This repo includes a lightweight evaluation harness (LLM-as-a-judge + retrieval metrics) under `src/evaluation/` and fixtures in `src/tests/tests.jsonl`. To score a single row from the test set, run:
+## AWS deployment notes
 
-```bash
-uv run python -m src.evaluation.eval 0
-```
+- CDK app lives in `infra-cdk/`.
+- ECS task image is pulled from ECR repo `banking-rag`.
+- `OPENAI_API_KEY` is read from AWS Secrets Manager (`banking-rag/openai-api-key`).
+- `DEMO_API_KEY` is provided at deploy/runtime.
 
-Replace `0` with any row index from the JSONL file. The CLI prints retrieval metrics (MRR, nDCG, keyword coverage) plus judge feedback and accuracy/completeness/relevance scores. You can also import `evaluate_all_retrieval` / `evaluate_all_answers` for batch processing in notebooks or scripts.
+## CI
 
-## Track runs with MLflow
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs on pushes/PRs to `main` and does:
 
-All artifact builds and evaluations can be logged as MLflow runs for reproducibility:
-
-```bash
-# rebuild artifacts + log params/metrics/artifacts under the "artifact-builds" experiment
-python -m src.pipeline.build_artifacts
-
-# run an evaluation (logs to the "evaluation-runs" experiment)
-python -m src.evaluation.eval 0
-```
-
-By default MLflow writes to `./mlruns`; set `MLFLOW_TRACKING_URI` if you want to point at a remote server. Start a local UI with `mlflow ui --port 5000` to compare runs, inspect logged artifacts (chunk CSVs, embeddings, Chroma snapshots, evaluation JSON), and monitor how parameter tweaks affect retrieval and judge scores.
-
-## Continuous integration
-
-A lightweight GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push or pull request against `main`. The workflow:
-
-- checks out the repository and installs dependencies with Python 3.13 (including the optional `dev` extras for Ruff),
-- runs `ruff check .` and `python -m compileall src` to catch style and syntax issues early,
-- builds the Docker image with `docker build -t banking-rag-ci .`,
-- runs `python -m src.evaluation.eval 0` as a smoke test when the `OPENAI_API_KEY` secret is present,
-- and, on successful runs against `main`, tags the commit as `ci-<run_number>` and pushes the tag back to the repo.
-
-If you want to skip auto-tagging for a fork, delete or edit the "Tag successful build" step in the workflow.
-
-## Customisation ideas
-
-1. **Switch embeddings/provider:** change `provider` and model names in `EmbeddingConfig`, `VectorStoreConfig`, and `RetrieverConfig`.
-2. **Adjust chunking granularity:** tune `chunk_size` and `chunk_overlap` in `DocumentChunkingConfig` to balance recall versus latency.
-3. **Deploy behind an API or Gradio app:** reuse `RAGPipeline.answer_question` as the backend for a chat UI.
-4. **Schedule nightly refreshes:** wrap the build code in a CI job to ingest any PDFs dropped into a shared folder.
+- Ruff lint (`ruff check .`)
+- Python byte-compile (`python -m compileall src`)
+- Docker build (`docker build -t banking-rag-ci .`)
+- optional evaluation smoke test when `OPENAI_API_KEY` secret is present
 
 ## Troubleshooting
 
-- `FileNotFoundError: Data folder not found` -> ensure you created the `data/` hierarchy and have readable PDFs.
-- `No vector database found` -> run the "Build the knowledge base" script before starting the RAG pipeline.
-- `401 from OpenAI` -> double-check `OPENAI_API_KEY` in `.env` and that your account has access to `gpt-4.1-nano`.
-- LangChain import errors -> reinstall dependencies with `uv sync` (or `pip install -e .`) to pull the pinned versions from `pyproject.toml`.
+- `503 from /ready` -> missing/invalid artifacts; run `python -m src.build.build_index`.
+- `401/403 from /ask` -> missing or wrong `X-API-Key` in demo mode.
+- `401 invalid_api_key` from OpenAI -> rotate and update your OpenAI key/secret.
+- Gradio follow-up validation errors -> ensure latest image is deployed.
 
 ## License
 
-MIT License. See `LICENSE`.
-
-## Repository metadata (GitHub “About”)
-
-Suggested description:
-“Demo-ready Banking RAG pipeline with prebuilt artifacts, FastAPI, and Gradio chat UI.”
-
-Suggested topics:
-`rag`, `banking`, `fastapi`, `gradio`, `langchain`, `chroma`, `llm`, `retrieval`
+MIT. See `LICENSE`.

@@ -1,0 +1,343 @@
+{
+  "version": "41.0.0",
+  "artifacts": {
+    "BankingRagStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "BankingRagStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "BankingRagStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://194722416872/us-east-1",
+      "properties": {
+        "templateFile": "BankingRagStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::194722416872:role/cdk-hnb659fds-deploy-role-194722416872-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::194722416872:role/cdk-hnb659fds-cfn-exec-role-194722416872-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722416872-us-east-1/efb846d14aaa4d90cc485b8d288ee5cf5b0607bb5e5e29eea19231ecd5ebaf70.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "BankingRagStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::194722416872:role/cdk-hnb659fds-lookup-role-194722416872-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "BankingRagStack.assets"
+      ],
+      "metadata": {
+        "/BankingRagStack/BankingRagVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpc53B6A009"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet1Subnet7B8E9B74"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet1RouteTableD00A025D"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet1RouteTableAssociation87C4C1A1"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet1DefaultRoute3E40D5DE"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet1EIP5307BC12"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet1NATGateway9B4C6EF6"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet2SubnetB884971B"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet2RouteTable7638E3F9"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet2RouteTableAssociation5AC34E42"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPublicSubnet2DefaultRoute9C82A890"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPrivateSubnet1SubnetC5B5ECA1"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPrivateSubnet1RouteTableEEFC1D7A"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPrivateSubnet1RouteTableAssociation408DFDCE"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPrivateSubnet1DefaultRoute0DFB1EE6"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPrivateSubnet2Subnet2BA8341A"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPrivateSubnet2RouteTable7E836F75"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPrivateSubnet2RouteTableAssociationD0DE809F"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcPrivateSubnet2DefaultRouteD6B388CB"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcIGWF3B4A1B8"
+          }
+        ],
+        "/BankingRagStack/BankingRagVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagVpcVPCGWCEF96561"
+          }
+        ],
+        "/BankingRagStack/BankingRagCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagCluster33891364"
+          }
+        ],
+        "/BankingRagStack/BankingRagRepo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagRepo17CB2470"
+          }
+        ],
+        "/BankingRagStack/BankingRagLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagLogGroup487BEFFD"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceLBF23DD0AD"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceLBSecurityGroupE878BBAA"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/LB/SecurityGroup/to BankingRagStackBankingRagServiceSecurityGroupCCE9CA16:8000": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceLBSecurityGrouptoBankingRagStackBankingRagServiceSecurityGroupCCE9CA168000E8D54684"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceLBPublicListener8DB10F5D"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceLBPublicListenerECSGroupE2B96AB9"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceLoadBalancerDNSDB24E245"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceServiceURLE53ACB79"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceTaskDefTaskRole6E93D3E0"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceTaskDef3BF7767C"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceTaskDefExecutionRole2D4F4B08"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceTaskDefExecutionRoleDefaultPolicy37751756"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+            "trace": [
+              "Annotations.addMessage (C:\\Users\\l\\AppData\\Local\\Temp\\jsii-kernel-ikkN6G\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:1608)",
+              "Annotations.addWarningV2 (C:\\Users\\l\\AppData\\Local\\Temp\\jsii-kernel-ikkN6G\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:825)",
+              "new BaseService (C:\\Users\\l\\AppData\\Local\\Temp\\jsii-kernel-ikkN6G\\node_modules\\aws-cdk-lib\\aws-ecs\\lib\\base\\base-service.js:1:8100)",
+              "new FargateService (C:\\Users\\l\\AppData\\Local\\Temp\\jsii-kernel-ikkN6G\\node_modules\\aws-cdk-lib\\aws-ecs\\lib\\fargate\\fargate-service.js:1:3551)",
+              "new ApplicationLoadBalancedFargateService (C:\\Users\\l\\AppData\\Local\\Temp\\jsii-kernel-ikkN6G\\node_modules\\aws-cdk-lib\\aws-ecs-patterns\\lib\\fargate\\application-load-balanced-fargate-service.js:1:3340)",
+              "Kernel._Kernel_create (C:\\Users\\l\\AppData\\Local\\Temp\\tmpaojui1jq\\lib\\program.js:549:25)",
+              "Kernel.create (C:\\Users\\l\\AppData\\Local\\Temp\\tmpaojui1jq\\lib\\program.js:219:93)",
+              "KernelHost.processRequest (C:\\Users\\l\\AppData\\Local\\Temp\\tmpaojui1jq\\lib\\program.js:15484:36)",
+              "KernelHost.run (C:\\Users\\l\\AppData\\Local\\Temp\\tmpaojui1jq\\lib\\program.js:15444:22)",
+              "Immediate._onImmediate (C:\\Users\\l\\AppData\\Local\\Temp\\tmpaojui1jq\\lib\\program.js:15445:45)",
+              "process.processImmediate (node:internal/timers:504:21)"
+            ]
+          }
+        ],
+        "/BankingRagStack/BankingRagService/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagService9E8F8961"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/Service/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceSecurityGroup1D639696"
+          }
+        ],
+        "/BankingRagStack/BankingRagService/Service/SecurityGroup/from BankingRagStackBankingRagServiceLBSecurityGroupDB85CD20:8000": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BankingRagServiceSecurityGroupfromBankingRagStackBankingRagServiceLBSecurityGroupDB85CD2080008CBCD481"
+          }
+        ],
+        "/BankingRagStack/AlbDnsName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbDnsName"
+          }
+        ],
+        "/BankingRagStack/EcrRepoUri": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcrRepoUri"
+          }
+        ],
+        "/BankingRagStack/GradioUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GradioUrl"
+          }
+        ],
+        "/BankingRagStack/DocsUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DocsUrl"
+          }
+        ],
+        "/BankingRagStack/HealthUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthUrl"
+          }
+        ],
+        "/BankingRagStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/BankingRagStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/BankingRagStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "BankingRagStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

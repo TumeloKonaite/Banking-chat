@@ -1,0 +1,21 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "efb846d14aaa4d90cc485b8d288ee5cf5b0607bb5e5e29eea19231ecd5ebaf70": {
+      "displayName": "BankingRagStack Template",
+      "source": {
+        "path": "BankingRagStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "194722416872-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-194722416872-us-east-1",
+          "objectKey": "efb846d14aaa4d90cc485b8d288ee5cf5b0607bb5e5e29eea19231ecd5ebaf70.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::194722416872:role/cdk-hnb659fds-file-publishing-role-194722416872-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
