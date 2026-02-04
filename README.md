@@ -8,6 +8,10 @@
 Demo-ready Retrieval-Augmented Generation (RAG) app for banking documents.
 It ships with prebuilt artifacts, serves a FastAPI backend, and exposes a Gradio UI.
 
+## Important disclaimer
+
+This is an informational demo, not a production banking system. Do not use it for real account actions, and do not submit personal data, account numbers, credentials, or other sensitive PII.
+
 ## Development Status
 
 Active development. The deployed demo and this repo are kept aligned, with fixes shipped continuously.
@@ -159,8 +163,10 @@ In demo mode (`DEMO_MODE=1`), startup is fail-fast when artifacts are missing.
 When `DEMO_MODE=1`, the server enforces:
 
 - API key auth (`DEMO_API_KEY`) for `/ask`
+- rate limiting on `/ask` (API-key/IP scoped)
 - locked-down CORS defaults for local UI origins
 - request size and schema validation limits
+- correlation IDs (`X-Request-ID`) and request telemetry (latency/model/retrieval hits)
 - fail-fast startup if artifacts are missing
 
 ## API request format (`POST /ask`)

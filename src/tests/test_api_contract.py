@@ -29,6 +29,14 @@ def test_health_endpoint_contract(app_module, monkeypatch):
         response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+    assert response.headers.get("X-Request-ID")
+
+
+def test_request_id_is_forwarded_when_provided(app_module, monkeypatch):
+    with _build_client(app_module, monkeypatch) as client:
+        response = client.get("/health", headers={"X-Request-ID": "req-123"})
+    assert response.status_code == 200
+    assert response.headers["X-Request-ID"] == "req-123"
 
 
 def test_ready_endpoint_returns_503_when_not_ready(app_module, monkeypatch):
@@ -55,6 +63,7 @@ def test_ask_request_schema_validation(app_module, monkeypatch):
 
 def test_ask_response_contract(app_module, monkeypatch):
     with _build_client(app_module, monkeypatch) as client:
+        app_module._RATE_LIMIT_ENABLED = False
         payload = {
             "question": "What ATM fees apply?",
             "doc_type": "product_terms",
@@ -69,3 +78,22 @@ def test_ask_response_contract(app_module, monkeypatch):
     assert body["sources"][0]["source"] == "fees.pdf"
     assert body["sources"][0]["doc_type"] == "product_terms"
     assert "ATM withdrawal fees" in body["sources"][0]["preview"]
+
+
+def test_ask_rate_limit_returns_429(app_module, monkeypatch):
+    with _build_client(app_module, monkeypatch) as client:
+        app_module._RATE_LIMIT_ENABLED = True
+        app_module._RATE_LIMIT_MAX_REQUESTS = 1
+        app_module._RATE_LIMIT_WINDOW_SECONDS = 60
+        app_module._RATE_LIMIT_BUCKETS.clear()
+        payload = {
+            "question": "What ATM fees apply?",
+            "doc_type": "product_terms",
+            "history": [],
+        }
+        first = client.post("/ask", json=payload)
+        second = client.post("/ask", json=payload)
+
+    assert first.status_code == 200
+    assert second.status_code == 429
+    assert second.headers.get("Retry-After")

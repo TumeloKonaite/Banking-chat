@@ -247,6 +247,12 @@ def build_interface(default_api_url: str = DEFAULT_API_URL) -> gr.Blocks:
                 2. Point this UI at the running API and start asking questions
                 """.strip()
             )
+        gr.Markdown(
+            """
+            **Important:** This assistant is for informational use only.
+            Do not submit account numbers, credentials, or other sensitive personal data.
+            """.strip()
+        )
 
         api_url_box = None
         refresh_btn = None

@@ -3,8 +3,13 @@ FastAPI application exposing the Banking RAG pipeline via /ask.
 """
 
 import json
+import logging
 import os
+import time
+import uuid
+from collections import defaultdict, deque
 from pathlib import Path
+from threading import Lock
 from typing import List, Tuple
 
 from dotenv import load_dotenv
@@ -26,10 +31,19 @@ app = FastAPI(
 )
 
 load_dotenv(override=False)
+API_LOGGER = logging.getLogger("banking_rag.api")
 
 _DEMO_MODE = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
 _DEMO_API_KEY = os.getenv("DEMO_API_KEY", "").strip()
 _MAX_REQUEST_BYTES = int(os.getenv("MAX_REQUEST_BYTES", "50000"))
+_RATE_LIMIT_ENABLED = os.getenv("RATE_LIMIT_ENABLED", "1" if _DEMO_MODE else "0").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+_RATE_LIMIT_MAX_REQUESTS = int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "30"))
+_RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60"))
 _DEMO_CORS_ORIGINS = [
     "http://localhost:7860",
     "http://127.0.0.1:7860",
@@ -65,6 +79,41 @@ _MISSING_ARTIFACTS_MESSAGE = (
     "Artifacts missing. This demo expects prebuilt artifacts. "
     "Run: make build-index (or python -m src.pipeline.build_artifacts)"
 )
+
+_REQUEST_ID_HEADER = "X-Request-ID"
+_RATE_LIMIT_BUCKETS: dict[str, deque[float]] = defaultdict(deque)
+_RATE_LIMIT_LOCK = Lock()
+
+
+def _client_ip(request: Request) -> str:
+    forwarded_for = request.headers.get("x-forwarded-for", "").strip()
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip() or "unknown"
+    if request.client and request.client.host:
+        return request.client.host
+    return "unknown"
+
+
+def _rate_limit_key(request: Request) -> tuple[str, str]:
+    api_key = request.headers.get("x-api-key", "").strip()
+    if api_key:
+        return f"api_key:{api_key}", "api_key"
+    return f"ip:{_client_ip(request)}", "ip"
+
+
+def _allow_rate_limited_request(key: str, now: float) -> tuple[bool, int]:
+    window_start = now - _RATE_LIMIT_WINDOW_SECONDS
+    with _RATE_LIMIT_LOCK:
+        bucket = _RATE_LIMIT_BUCKETS[key]
+        while bucket and bucket[0] <= window_start:
+            bucket.popleft()
+        if len(bucket) >= _RATE_LIMIT_MAX_REQUESTS:
+            retry_after = max(1, int(_RATE_LIMIT_WINDOW_SECONDS - (now - bucket[0])))
+            return False, retry_after
+        bucket.append(now)
+    return True, 0
+
+
 def _check_artifacts() -> Tuple[bool, str]:
     if not VECTOR_DB_DIR.exists():
         return False, _MISSING_ARTIFACTS_MESSAGE
@@ -131,6 +180,30 @@ def warm_pipeline() -> None:
         )
     if _READY_STATE[0]:
         get_pipeline()
+
+
+@app.middleware("http")
+async def request_context(request: Request, call_next):
+    request_id = request.headers.get("x-request-id", "").strip() or str(uuid.uuid4())
+    request.state.request_id = request_id
+    start = time.perf_counter()
+    response = None
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        response.headers[_REQUEST_ID_HEADER] = request_id
+        return response
+    finally:
+        latency_ms = int((time.perf_counter() - start) * 1000)
+        API_LOGGER.info(
+            "request request_id=%s method=%s path=%s status=%s latency_ms=%s",
+            request_id,
+            request.method,
+            request.url.path,
+            status_code,
+            latency_ms,
+        )
 
 
 @app.middleware("http")
@@ -202,14 +275,41 @@ def ask_question(payload: AskRequest, request: Request) -> AskResponse:
             raise HTTPException(status_code=401, detail="Missing API key.")
         if api_key != _DEMO_API_KEY:
             raise HTTPException(status_code=403, detail="Invalid API key.")
+    if _RATE_LIMIT_ENABLED:
+        rate_key, key_scope = _rate_limit_key(request)
+        allowed, retry_after = _allow_rate_limited_request(rate_key, now=time.time())
+        if not allowed:
+            request_id = getattr(request.state, "request_id", "unknown")
+            API_LOGGER.warning(
+                "rate_limited request_id=%s scope=%s path=/ask retry_after=%s",
+                request_id,
+                key_scope,
+                retry_after,
+            )
+            raise HTTPException(
+                status_code=429,
+                detail="Rate limit exceeded. Try again later.",
+                headers={"Retry-After": str(retry_after)},
+            )
     pipeline = get_pipeline()
 
     try:
+        started = time.perf_counter()
         history = [{"role": msg.role, "content": msg.content} for msg in payload.history]
         answer, docs = pipeline.answer_question(
             question=payload.question,
             history=history,
             doc_type=payload.doc_type,
+        )
+        model_name = getattr(getattr(pipeline, "config", None), "model_name", "unknown")
+        request_id = getattr(request.state, "request_id", "unknown")
+        ask_latency_ms = int((time.perf_counter() - started) * 1000)
+        API_LOGGER.info(
+            "ask request_id=%s latency_ms=%s model=%s retrieval_hits=%s status=ok",
+            request_id,
+            ask_latency_ms,
+            model_name,
+            len(docs),
         )
         sources = _build_sources(docs)
         return AskResponse(answer=answer, sources=sources)
